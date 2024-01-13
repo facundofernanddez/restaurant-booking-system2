@@ -1,3 +1,14 @@
+import { api } from "@/utils/api";
+
 export default function DashboardPage() {
-  return <div>Dashboard</div>;
+  const { mutate } = api.admin.sensitive.useMutation();
+
+  return (
+    <div>
+      Dashboard{" "}
+      <button type="button" onClick={() => mutate()}>
+        botton top secret
+      </button>{" "}
+    </div>
+  );
 }

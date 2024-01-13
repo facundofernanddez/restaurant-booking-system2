@@ -1,7 +1,14 @@
 import Calendar from "@/components/Calendar";
+import Spinner from "@/components/Spinner";
 import Head from "next/head";
+import { useState } from "react";
 
 export default function Home() {
+  const [date, setDate] = useState<DateType>({
+    justDate: null,
+    dateTime: null,
+  });
+
   return (
     <>
       <Head>
@@ -10,7 +17,14 @@ export default function Home() {
       </Head>
 
       <main>
-        <Calendar />
+        {!date.dateTime && <Calendar setDate={setDate} date={date} />}
+        {date.dateTime && false ? (
+          <Menu />
+        ) : (
+          <div className="flex h-screen items-center justify-center">
+            <Spinner />
+          </div>
+        )}
       </main>
     </>
   );

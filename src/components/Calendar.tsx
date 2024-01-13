@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import ReactCalendar from "react-calendar";
 import { add, format } from "date-fns";
 import {
@@ -8,20 +7,14 @@ import {
   STORE_CLOSING_TIME,
   STORE_OPENING_TIME,
 } from "@/constants/config";
+import type { Dispatch, SetStateAction } from "react";
 
-interface DateType {
-  justDate: Date | null;
-  dateTime: Date | null;
+interface CalendarProps {
+  date: DateType;
+  setDate: Dispatch<SetStateAction<DateType>>;
 }
 
-export default function Calendar() {
-  const [date, setDate] = useState<DateType>({
-    justDate: null,
-    dateTime: null,
-  });
-
-  console.log(date.dateTime);
-
+export default function Calendar({ setDate, date }: CalendarProps) {
   const getTimes = () => {
     if (!date.justDate) return;
 
