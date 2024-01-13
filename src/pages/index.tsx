@@ -1,4 +1,5 @@
 import Calendar from "@/components/Calendar";
+import Menu from "@/components/Menu";
 import Spinner from "@/components/Spinner";
 import Head from "next/head";
 import { useState } from "react";
