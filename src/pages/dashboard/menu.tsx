@@ -1,4 +1,9 @@
+import { selectOptions } from "@/utils/helpers";
 import { useState } from "react";
+import type { MultiValue } from "react-select";
+import dynamic from "next/dynamic";
+
+const DynamicSelect = dynamic(() => import("react-select"), { ssr: false });
 
 type Input = {
   name: string;
