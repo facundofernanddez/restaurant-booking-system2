@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import type { MultiValue } from "react-select";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { MAX_FILE_SIZE } from "@/constants/config";
 
 const DynamicSelect = dynamic(() => import("react-select"), { ssr: false });
 
@@ -38,6 +39,8 @@ export default function Menu() {
     if (!e.target.files?.[0]) return setError("No file selected");
     if (e.target.files[0].size > MAX_FILE_SIZE)
       return setError("File size exceeds maximum");
+
+    setInput((prev) => ({ ...prev, file: e.target.files![0] }));
   };
   return (
     <>
