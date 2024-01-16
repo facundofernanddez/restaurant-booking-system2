@@ -1,7 +1,8 @@
 import { selectOptions } from "@/utils/helpers";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { MultiValue } from "react-select";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
 const DynamicSelect = dynamic(() => import("react-select"), { ssr: false });
 
@@ -21,6 +22,23 @@ const initialInput = {
 
 export default function Menu() {
   const [input, setInput] = useState<Input>(initialInput);
+  const [preview, setPreview] = useState<string>("");
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    if (!input.file) return;
+
+    const objectUrl = URL.createObjectURL(input.file);
+    setPreview(objectUrl);
+
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [input.file]);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.[0]) return setError("No file selected");
+    if (e.target.files[0].size > MAX_FILE_SIZE)
+      return setError("File size exceeds maximum");
+  };
   return (
     <>
       <div className="">
