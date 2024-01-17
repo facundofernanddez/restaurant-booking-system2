@@ -42,7 +42,7 @@ export const adminRouter = createTRPCRouter({
       });
     }),
 
-  sensitive: adminProcedure.mutation(() => {
-    return "sensitive";
-  }),
+  createPresignedUrl: adminProcedure
+    .input(z.object({ fileType: z.string() }))
+    .mutation(async () => {}),
 });
