@@ -5,6 +5,8 @@ import { nanoid } from "nanoid";
 import { getJwtSecretKey } from "@/lib/auth";
 import cookie from "cookie";
 import { TRPCError } from "@trpc/server";
+import { s3 } from "@/lib/s3";
+import { MAX_FILE_SIZE } from "@/constants/config";
 
 export const adminRouter = createTRPCRouter({
   login: publicProcedure
@@ -49,6 +51,12 @@ export const adminRouter = createTRPCRouter({
       const ex = input.fileType.split("/")[1];
       const key = `${id}.${ex}`;
 
-      const { url, fields } = await new Promise((resolve, reject) => {});
+      const { url, fields } = await new Promise((resolve, reject) => {
+        s3.createPresignedPost({
+          Bucket: "restaurant-booking-system2",
+          Fields: { key },
+          Conditions: [["content-length-range", 0, MAX_FILE_SIZE]],
+        });
+      });
     }),
 });
