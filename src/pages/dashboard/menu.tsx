@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { MAX_FILE_SIZE } from "@/constants/config";
 import { api } from "@/utils/api";
+import type { Categories } from "@/utils/types";
 
 const DynamicSelect = dynamic(() => import("react-select"), { ssr: false });
 
@@ -29,6 +30,8 @@ export default function Menu() {
 
   const { mutateAsync: createPresignedUrl } =
     api.admin.createPresignedUrl.useMutation();
+
+  const { mutateAsync: addItem } = api.admin.addMenuItem.useMutation();
 
   useEffect(() => {
     if (!input.file) return;
@@ -77,6 +80,16 @@ export default function Menu() {
 
   const addMenuItem = async () => {
     const key = await handleImageUpload();
+    if (!key) return new Error("No key");
+
+    await addItem({
+      name: input.name,
+      imageKey: key,
+      categories: input.categories.map(
+        (c) => c.value as Exclude<Categories, "all">,
+      ),
+      price: input.price,
+    });
   };
 
   return (
