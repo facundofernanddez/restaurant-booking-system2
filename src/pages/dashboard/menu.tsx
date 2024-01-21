@@ -4,6 +4,7 @@ import type { MultiValue } from "react-select";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { MAX_FILE_SIZE } from "@/constants/config";
+import { api } from "@/utils/api";
 
 const DynamicSelect = dynamic(() => import("react-select"), { ssr: false });
 
@@ -26,6 +27,9 @@ export default function Menu() {
   const [preview, setPreview] = useState<string>("");
   const [error, setError] = useState<string>("");
 
+  const { mutateAsync: createPresignedUrl } =
+    api.admin.createPresignedUrl.useMutation();
+
   useEffect(() => {
     if (!input.file) return;
 
@@ -42,6 +46,39 @@ export default function Menu() {
 
     setInput((prev) => ({ ...prev, file: e.target.files![0] }));
   };
+
+  const handleImageUpload = async () => {
+    const { file } = input;
+    if (!file) return;
+
+    const { fields, key, url } = await createPresignedUrl({
+      fileType: file.type,
+    });
+
+    const data = {
+      ...fields,
+      "Content-Type": file.type,
+      file,
+    };
+
+    const formData = new FormData();
+
+    Object.entries(data).forEach((key, value) => {
+      formData.append(key, value as any);
+    });
+
+    await fetch(url, {
+      method: "POST",
+      body: formData,
+    });
+
+    return key;
+  };
+
+  const addMenuItem = async () => {
+    const key = await handleImageUpload();
+  };
+
   return (
     <>
       <div className="">
