@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { selectOptions } from "@/utils/helpers";
 import React, { useEffect, useState } from "react";
 import type { MultiValue } from "react-select";
@@ -30,8 +33,8 @@ export default function Menu() {
 
   const { mutateAsync: createPresignedUrl } =
     api.admin.createPresignedUrl.useMutation();
-
   const { mutateAsync: addItem } = api.admin.addMenuItem.useMutation();
+  const { data: menuItems, refetch } = api.menu.getMenuItems.useQuery();
 
   useEffect(() => {
     if (!input.file) return;
@@ -66,7 +69,7 @@ export default function Menu() {
 
     const formData = new FormData();
 
-    Object.entries(data).forEach((key, value) => {
+    Object.entries(data).forEach(([key, value]) => {
       formData.append(key, value as any);
     });
 
@@ -90,6 +93,11 @@ export default function Menu() {
       ),
       price: input.price,
     });
+
+    await refetch();
+
+    setInput(initialInput);
+    setPreview("");
   };
 
   return (
