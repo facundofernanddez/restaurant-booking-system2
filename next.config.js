@@ -17,6 +17,9 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    domains: ["restaurant-booking-system2.s3.amazonaws.com"],
+  },
 };
 
 export default config;

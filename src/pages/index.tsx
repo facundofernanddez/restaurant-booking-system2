@@ -1,6 +1,7 @@
 import Calendar from "@/components/Calendar";
 import Menu from "@/components/Menu";
 import Spinner from "@/components/Spinner";
+import type { DateType } from "@/utils/types";
 import Head from "next/head";
 import { useState } from "react";
 

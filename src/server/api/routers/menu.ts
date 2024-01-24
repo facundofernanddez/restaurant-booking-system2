@@ -9,13 +9,15 @@ export const menuRouter = createTRPCRouter({
     const menuItems = await ctx.db.menuItem.findMany();
 
     const withUrls = await Promise.all(
-      menuItems.map(async (menuItem) => ({
-        ...menuItems,
-        url: await s3.getSignedUrlPromise("getObject", {
-          Bucket: "restaurant-booking-system2",
-          Key: menuItem.imageKey,
-        }),
-      })),
+      menuItems.map(async (menuItem) => {
+        return {
+          ...menuItems,
+          url: await s3.getSignedUrlPromise("getObject", {
+            Bucket: "restaurant-booking-system2",
+            Key: menuItem.imageKey,
+          }),
+        };
+      }),
     );
 
     return withUrls;
