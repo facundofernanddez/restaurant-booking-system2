@@ -11,7 +11,7 @@ export const menuRouter = createTRPCRouter({
     const withUrls = await Promise.all(
       menuItems.map(async (menuItem) => {
         return {
-          ...menuItems,
+          ...menuItem,
           url: await s3.getSignedUrlPromise("getObject", {
             Bucket: "restaurant-booking-system2",
             Key: menuItem.imageKey,

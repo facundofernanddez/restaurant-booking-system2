@@ -184,26 +184,20 @@ export default function Menu() {
         <div className="mx-auto mt-12 max-w-7xl">
           <p className="text-lg font-medium">Your menu items:</p>
           <div className="mb-12 mt-6 grid grid-cols-4 gap-8">
-            {menuItems?.map((menuItem) => {
-              const menuItemPop = menuItems.pop();
-
-              return (
-                <div key={menuItemPop?.id}>
-                  <p>{menuItemPop?.name}</p>
-                  <div className="relative h-40 w-40">
-                    <Image priority fill alt="" src={menuItem?.url} />
-                  </div>
-                  <button
-                    onClick={() =>
-                      handleDelete(menuItemPop!.imageKey, menuItemPop!.id)
-                    }
-                    className="text-xs text-red-500"
-                  >
-                    delete
-                  </button>
+            {menuItems?.map((menuItem) => (
+              <div key={menuItem?.id}>
+                <p>{menuItem?.name}</p>
+                <div className="relative h-40 w-40">
+                  <Image priority fill alt="" src={menuItem?.url} />
                 </div>
-              );
-            })}
+                <button
+                  onClick={() => handleDelete(menuItem?.imageKey, menuItem?.id)}
+                  className="text-xs text-red-500"
+                >
+                  delete
+                </button>
+              </div>
+            ))}
           </div>
         </div>
       </div>
