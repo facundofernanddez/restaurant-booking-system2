@@ -18,7 +18,13 @@ const config = {
     defaultLocale: "en",
   },
   images: {
-    domains: ["restaurant-booking-system2.s3.amazonaws.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "restaurant-booking-system2.s3.amazonaws.com",
+        port: "",
+      },
+    ],
   },
 };
 
