@@ -86,7 +86,7 @@ export const adminRouter = createTRPCRouter({
         categories: z.array(
           z.union([
             z.literal("breakfast"),
-            z.literal("launch"),
+            z.literal("lunch"),
             z.literal("dinner"),
           ]),
         ),
