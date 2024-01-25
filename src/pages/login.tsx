@@ -2,7 +2,7 @@
 
 import { api } from "@/utils/api";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { type ChangeEvent, useState } from "react";
 import { HiLockClosed } from "react-icons/hi";
 
