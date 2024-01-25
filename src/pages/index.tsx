@@ -1,24 +1,15 @@
 import Calendar from "@/components/Calendar";
-import Menu from "@/components/Menu";
-import Spinner from "@/components/Spinner";
-import { api } from "@/utils/api";
-import type { DateType } from "@/utils/types";
+import { db } from "@/server/db";
+import type { Day } from "@prisma/client";
+import { formatISO } from "date-fns";
 import Head from "next/head";
-import { useEffect, useState } from "react";
 
-export default function Home() {
-  const [date, setDate] = useState<DateType>({
-    justDate: null,
-    dateTime: null,
-  });
+interface HomeProps {
+  days: Day[];
+  closedDays: string[];
+}
 
-  useEffect(() => {
-    if (date.dateTime) checkMenuStatus();
-  }, [date]);
-
-  const { mutate: checkMenuStatus, isSuccess } =
-    api.menu.checkMenuStatus.useMutation();
-
+export default function Home({ days, closedDays }: HomeProps) {
   return (
     <>
       <Head>
@@ -27,15 +18,17 @@ export default function Home() {
       </Head>
 
       <main>
-        {!date.dateTime && <Calendar setDate={setDate} date={date} />}
-        {date.dateTime && isSuccess ? (
-          <Menu />
-        ) : (
-          <div className="flex h-screen items-center justify-center">
-            <Spinner />
-          </div>
-        )}
+        <Calendar days={days} closedDays={closedDays} />
       </main>
     </>
   );
+}
+
+export async function getServerSideProps() {
+  const days = await db.day.findMany();
+  const closedDays = (await db.closedDay.findMany()).map((day) =>
+    formatISO(day.date),
+  );
+
+  return { props: { days, closedDays } };
 }
