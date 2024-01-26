@@ -1,38 +1,51 @@
 "use client";
 
 import ReactCalendar from "react-calendar";
-import { add, format } from "date-fns";
+import {
+  add,
+  format,
+  formatISO,
+  isBefore,
+  roundToNearestMinutes,
+} from "date-fns";
 import {
   INTERVAL,
   STORE_CLOSING_TIME,
   STORE_OPENING_TIME,
 } from "@/constants/config";
-import type { Dispatch, SetStateAction } from "react";
+import type { Day } from "@prisma/client";
+import { useEffect, useState } from "react";
+import { DateType } from "@/utils/types";
+import { useRouter } from "next/navigation";
 
 interface CalendarProps {
-  date: DateType;
-  setDate: Dispatch<SetStateAction<DateType>>;
+  days: Day[];
+  closedDays: string[];
 }
 
-export default function Calendar({ setDate, date }: CalendarProps) {
-  const getTimes = () => {
-    if (!date.justDate) return;
+export default function Calendar({ days, closedDays }: CalendarProps) {
+  const router = useRouter();
 
-    const { justDate } = date;
+  const today = days.find((d) => d.dayOfWeek === now.getDay());
+  const rounded = roundToNearestMinutes(now, OPENING_HOURS_INTERVAL);
+  const closing = parse(today!.closeTime, "kk:mm", now);
+  const tooLate = !isBefore(rounded, closing);
 
-    const beginning = add(justDate, { hours: STORE_OPENING_TIME });
-    const end = add(justDate, { hours: STORE_CLOSING_TIME });
-    const interval = INTERVAL;
+  if (tooLate) closedDays.push(formatISO(new Date().setHours(0, 0, 0, 0)));
 
-    const times = [];
-    for (let i = beginning; i <= end; i = add(i, { minutes: interval })) {
-      times.push(i);
+  const [date, setDate] = useState<DateType>({
+    justDate: null,
+    dateTime: null,
+  });
+
+  useEffect(() => {
+    if (date.dateTime) {
+      localStorage.setItem("selectedTime", date.dateTime.toISOString());
+      router.push("/menu");
     }
+  }, [date.dateTime]);
 
-    return times;
-  };
-
-  const times = getTimes();
+  const times = date.justDate && getOpeningTimes(date.justDate, days);
 
   return (
     <div className="flex h-screen flex-col items-center justify-center">
@@ -54,6 +67,7 @@ export default function Calendar({ setDate, date }: CalendarProps) {
           minDate={new Date()}
           className="react-calendar p-2"
           view="month"
+          tileDisabled={({ date }) => closedDays.includes(formatISO(date))}
           onClickDay={(date) =>
             setDate((prev) => ({ ...prev, justDate: date }))
           }
