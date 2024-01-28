@@ -1,22 +1,13 @@
 "use client";
 
 import ReactCalendar from "react-calendar";
-import {
-  add,
-  format,
-  formatISO,
-  isBefore,
-  roundToNearestMinutes,
-} from "date-fns";
-import {
-  INTERVAL,
-  STORE_CLOSING_TIME,
-  STORE_OPENING_TIME,
-} from "@/constants/config";
+import { format, formatISO, isBefore, parse } from "date-fns";
+import { INTERVAL, now } from "@/constants/config";
 import type { Day } from "@prisma/client";
 import { useEffect, useState } from "react";
-import { DateType } from "@/utils/types";
+import type { DateType } from "@/utils/types";
 import { useRouter } from "next/navigation";
+import { getOpeningTimes, roundToNearestMinutes } from "@/utils/helpers";
 
 interface CalendarProps {
   days: Day[];
@@ -27,7 +18,7 @@ export default function Calendar({ days, closedDays }: CalendarProps) {
   const router = useRouter();
 
   const today = days.find((d) => d.dayOfWeek === now.getDay());
-  const rounded = roundToNearestMinutes(now, OPENING_HOURS_INTERVAL);
+  const rounded = roundToNearestMinutes(now, INTERVAL);
   const closing = parse(today!.closeTime, "kk:mm", now);
   const tooLate = !isBefore(rounded, closing);
 
@@ -43,7 +34,7 @@ export default function Calendar({ days, closedDays }: CalendarProps) {
       localStorage.setItem("selectedTime", date.dateTime.toISOString());
       router.push("/menu");
     }
-  }, [date.dateTime]);
+  }, [date.dateTime, router]);
 
   const times = date.justDate && getOpeningTimes(date.justDate, days);
 
