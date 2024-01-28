@@ -1,6 +1,14 @@
-import { categories } from "@/constants/config";
+import { INTERVAL, categories, now } from "@/constants/config";
 import type { Day } from "@prisma/client";
-import { addMinutes, getMinutes, isEqual, parse } from "date-fns";
+import {
+  add,
+  addMinutes,
+  getHours,
+  getMinutes,
+  isBefore,
+  isEqual,
+  parse,
+} from "date-fns";
 
 export const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -50,5 +58,28 @@ export const getOpeningTimes = (startDate: Date, dbDays: Day[]) => {
   let minutes: number;
 
   if (isToday) {
+    const rounded = roundToNearestMinutes(now, INTERVAL);
+    const tooLate = !isBefore(rounded, closing);
+
+    if (tooLate) throw new Error("No more bookings today");
+
+    const isBeforeOpening = isBefore(rounded, opening);
+
+    hours = getHours(isBeforeOpening ? opening : rounded);
+    minutes = getMinutes(isBeforeOpening ? opening : rounded);
+  } else {
+    hours = getHours(opening);
+    minutes = getMinutes(opening);
   }
+
+  const beginning = add(startDate, { hours, minutes });
+  const end = add(startDate, { hours: getHours(closing) });
+  const interval = INTERVAL;
+
+  const times = [];
+  for (let i = beginning; i <= end; i = add(i, { minutes: interval })) {
+    times.push(i);
+  }
+
+  return times;
 };
