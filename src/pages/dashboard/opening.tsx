@@ -5,7 +5,7 @@ import { formatISO } from "date-fns";
 import { useState } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import { Switch } from "@headlessui/react";
-import { classNames } from "@/utils/helpers";
+import { capitalize, classNames, weekdayIndexToName } from "@/utils/helpers";
 
 export async function getServerSideProps() {
   const days = await db.day.findMany();
@@ -76,6 +76,14 @@ export default function OpeningPage({ days }: OpeningPageProps) {
   const dayIsClosed =
     selectedDate && closedDays?.includes(formatISO(selectedDate));
 
+    function _changeTime(day: Day){
+      return function(time: string, type: "openTime" | "closeTime") {
+      const index = openingHrs.findIndex(x => x.name === weekdayIndexToName(day.dayOfWeek))
+      const newOpeningHrs = [...openingHrs]
+      newOpeningHrs[index]![type] = time
+      setOpeningHrs(newOpeningHrs)
+    }}
+
   return (
     <div className="mx-auto max-w-xl">
       <Toaster />
@@ -100,6 +108,35 @@ export default function OpeningPage({ days }: OpeningPageProps) {
         </Switch>
         <p className={`${enabled ? "font-medium" : ""}`}>Opening days</p>
       </div>
+      
+      {!enabled ? (
+        <div className="my-12 flex flex-col gap-8">
+          {days.map(day => {
+            const changeTime = _changeTime(day)
+
+            return (
+              <div className="grid grid-cols-3 place-items-center">
+                <h3 className="font-semibold">{capitalize(weekdayIndexToName(day.dayOfWeek)!)}</h3>
+                <div className="mx-4">
+                  <TimeSelector type="openTime" changeTime={changeTime} selected={openingHrs[openingHrs.findIndex((x) => x.name === weekdayIndexToName(day.dayOfWeek))]?.openTime}/>
+                </div>
+
+                <div className="mx-4">
+                  <TimeSelector type="closeTime" changeTime={changeTime} selected={openingHrs[openingHrs.findIndex((x) => x.name === weekdayIndexToName(day.dayOfWeek))]?.closeTime}/>
+                </div>
+              </div>
+            )
+          })}
+
+          <Button onClick={()=>{
+            const withId = openingHrs.map(day => ({...day, id: days[days.findIndex(d => d.name === day.name)]!.id}))
+            saveOpeningHrs(withId)
+          }} isLoading={isLoading} colorScheme="green" variant="solid">Save</Button>
+        </div>
+      ):(
+        
+      )}
+
     </div>
   );
 }
