@@ -1,4 +1,5 @@
 import { db } from "@/server/db";
+import { Button } from "@chakra-ui/react";
 import { api } from "@/utils/api";
 import type { Day } from "@prisma/client";
 import { formatISO } from "date-fns";
@@ -6,6 +7,7 @@ import { useState } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import { Switch } from "@headlessui/react";
 import { capitalize, classNames, weekdayIndexToName } from "@/utils/helpers";
+import Calendar from "@/components/Calendar";
 
 export async function getServerSideProps() {
   const days = await db.day.findMany();
@@ -76,13 +78,16 @@ export default function OpeningPage({ days }: OpeningPageProps) {
   const dayIsClosed =
     selectedDate && closedDays?.includes(formatISO(selectedDate));
 
-    function _changeTime(day: Day){
-      return function(time: string, type: "openTime" | "closeTime") {
-      const index = openingHrs.findIndex(x => x.name === weekdayIndexToName(day.dayOfWeek))
-      const newOpeningHrs = [...openingHrs]
-      newOpeningHrs[index]![type] = time
-      setOpeningHrs(newOpeningHrs)
-    }}
+  function _changeTime(day: Day) {
+    return function (time: string, type: "openTime" | "closeTime") {
+      const index = openingHrs.findIndex(
+        (x) => x.name === weekdayIndexToName(day.dayOfWeek),
+      );
+      const newOpeningHrs = [...openingHrs];
+      newOpeningHrs[index]![type] = time;
+      setOpeningHrs(newOpeningHrs);
+    };
+  }
 
   return (
     <div className="mx-auto max-w-xl">
@@ -108,35 +113,91 @@ export default function OpeningPage({ days }: OpeningPageProps) {
         </Switch>
         <p className={`${enabled ? "font-medium" : ""}`}>Opening days</p>
       </div>
-      
+
       {!enabled ? (
         <div className="my-12 flex flex-col gap-8">
-          {days.map(day => {
-            const changeTime = _changeTime(day)
+          {days.map((day) => {
+            const changeTime = _changeTime(day);
 
             return (
-              <div className="grid grid-cols-3 place-items-center">
-                <h3 className="font-semibold">{capitalize(weekdayIndexToName(day.dayOfWeek)!)}</h3>
+              <div key={day.id} className="grid grid-cols-3 place-items-center">
+                <h3 className="font-semibold">
+                  {capitalize(weekdayIndexToName(day.dayOfWeek)!)}
+                </h3>
                 <div className="mx-4">
-                  <TimeSelector type="openTime" changeTime={changeTime} selected={openingHrs[openingHrs.findIndex((x) => x.name === weekdayIndexToName(day.dayOfWeek))]?.openTime}/>
+                  <TimeSelector
+                    type="openTime"
+                    changeTime={changeTime}
+                    selected={
+                      openingHrs[
+                        openingHrs.findIndex(
+                          (x) => x.name === weekdayIndexToName(day.dayOfWeek),
+                        )
+                      ]?.openTime
+                    }
+                  />
                 </div>
 
                 <div className="mx-4">
-                  <TimeSelector type="closeTime" changeTime={changeTime} selected={openingHrs[openingHrs.findIndex((x) => x.name === weekdayIndexToName(day.dayOfWeek))]?.closeTime}/>
+                  <TimeSelector
+                    type="closeTime"
+                    changeTime={changeTime}
+                    selected={
+                      openingHrs[
+                        openingHrs.findIndex(
+                          (x) => x.name === weekdayIndexToName(day.dayOfWeek),
+                        )
+                      ]?.closeTime
+                    }
+                  />
                 </div>
               </div>
-            )
+            );
           })}
 
-          <Button onClick={()=>{
-            const withId = openingHrs.map(day => ({...day, id: days[days.findIndex(d => d.name === day.name)]!.id}))
-            saveOpeningHrs(withId)
-          }} isLoading={isLoading} colorScheme="green" variant="solid">Save</Button>
+          <Button
+            onClick={() => {
+              const withId = openingHrs.map((day) => ({
+                ...day,
+                id: days[days.findIndex((d) => d.name === day.name)]!.id,
+              }));
+              saveOpeningHrs(withId);
+            }}
+            isLoading={isLoading}
+            colorScheme="green"
+            variant="solid"
+          >
+            Save
+          </Button>
         </div>
-      ):(
-        
-      )}
+      ) : (
+        <div className="mt-6 flex flex-col items-center gap-6">
+          <Calendar
+            minDate={now}
+            className="REACT-CALENDAR p-2"
+            view="month"
+            onClickDay={(date) => setSelectedDate(date)}
+            titleClassName={({ activeStartDate, date, view }) => {
+              return closedDays?.includes(formatISO(date))
+                ? "closed-day"
+                : null;
+            }}
+          />
 
+          <Button
+            onClick={() => {
+              if (dayIsClosed) openDay({ date: selectedDate });
+              else if (selectedDate) closeDay({ date: selectedDate });
+            }}
+            disabled={!selectedDate}
+            isLoading={isLoading}
+            colorScheme="green"
+            variant="solid"
+          >
+            {dayIsClosed ? "Open shop this day" : "Close shop this day"}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
