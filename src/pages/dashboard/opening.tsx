@@ -8,6 +8,7 @@ import { Toaster, toast } from "react-hot-toast";
 import { Switch } from "@headlessui/react";
 import { capitalize, classNames, weekdayIndexToName } from "@/utils/helpers";
 import Calendar from "@/components/Calendar";
+import TimeSelector from "@/components/TimeSelector";
 
 export async function getServerSideProps() {
   const days = await db.day.findMany();
