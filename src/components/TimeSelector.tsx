@@ -1,7 +1,8 @@
 import { classNames } from "@/utils/helpers";
 import { Listbox, Transition } from "@headlessui/react";
+import { space } from "postcss/lib/list";
 import { Fragment } from "react";
-import { HiSelector } from "react-icons/hi";
+import { HiCheck, HiSelector } from "react-icons/hi";
 
 interface TimeSelectorProps {
   changeTime: (time: string, type: "openTime" | "closeTime") => void;
@@ -78,7 +79,45 @@ export default function TimeSelector({
                       )
                     }
                     value={time}
-                  ></Listbox.Option>
+                  >
+                    {({ selected: selectedOption, active }) => (
+                      <>
+                        <div className="flex items-center">
+                          <span
+                            className={classNames(
+                              time === selected
+                                ? "bg-green-400"
+                                : "bg-gray-200",
+                              "inline-block h-2 w-2 flex-shrink-0 rounded-full",
+                            )}
+                            aria-hidden="true"
+                          />
+                          <span
+                            className={classNames(
+                              selected ? "font-semibold" : "font-normal",
+                              "ml-3 block truncate",
+                            )}
+                          >
+                            {time}
+                            <span className="sr-only">
+                              is {true ? "online" : "offline"}
+                            </span>
+                          </span>
+                        </div>
+
+                        {selectedOption ? (
+                          <span
+                            className={classNames(
+                              active ? "text-white" : "text-indigo-600",
+                              "absolute inset-y-0 right-0 flex items-center pr-4",
+                            )}
+                          >
+                            <HiCheck className="h-5 w-5" aria-hidden="true" />
+                          </span>
+                        ) : null}
+                      </>
+                    )}
+                  </Listbox.Option>
                 ))}
               </Listbox.Options>
             </Transition>
