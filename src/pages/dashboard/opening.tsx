@@ -7,8 +7,9 @@ import { useState } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import { Switch } from "@headlessui/react";
 import { capitalize, classNames, weekdayIndexToName } from "@/utils/helpers";
-import Calendar from "@/components/Calendar";
 import TimeSelector from "@/components/TimeSelector";
+import Calendar from "react-calendar";
+import { now } from "@/constants/config";
 
 export async function getServerSideProps() {
   const days = await db.day.findMany();
@@ -100,7 +101,7 @@ export default function OpeningPage({ days }: OpeningPageProps) {
           onChange={setEnabled}
           className={classNames(
             enabled ? "bg-indigo-600" : "bg-gray-200",
-            "relative inline-flex h-6 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2",
+            "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2",
           )}
         >
           <span className="sr-only">Use setting</span>
@@ -178,7 +179,7 @@ export default function OpeningPage({ days }: OpeningPageProps) {
             className="REACT-CALENDAR p-2"
             view="month"
             onClickDay={(date) => setSelectedDate(date)}
-            titleClassName={({ activeStartDate, date, view }) => {
+            tileClassName={({ date }) => {
               return closedDays?.includes(formatISO(date))
                 ? "closed-day"
                 : null;
