@@ -23,7 +23,7 @@ export default function MenuPage() {
 
       setSelectedTime(selectedTime);
     }
-  }, []);
+  }, [router]);
 
   return (
     <>

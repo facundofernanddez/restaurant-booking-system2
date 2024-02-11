@@ -1,12 +1,17 @@
 import { api } from "@/utils/api";
 import { capitalize, selectOptions } from "@/utils/helpers";
+import { format, parseISO } from "date-fns";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiArrowLeft } from "react-icons/hi";
 import Select from "react-select";
 
-export default function Menu() {
+interface MenuProps {
+  selectedTime: string;
+}
+
+export default function Menu({ selectedTime }: MenuProps) {
   const [filter, setFilter] = useState<undefined | string>("");
   const router = useRouter();
   const { data: menuItems } = api.menu.getMenuItems.useQuery();
@@ -25,8 +30,7 @@ export default function Menu() {
               className="cursor-pointer"
               onClick={() => router.push("/")}
             />
-            On our menu for
-            {/* On our menu for {format(parseISO(selectedTime), "MMM do, yyyy")} */}
+            On our menu for {format(parseISO(selectedTime), "MMM do, yyyy")}
           </h2>
           <Select
             onChange={(e) => {
