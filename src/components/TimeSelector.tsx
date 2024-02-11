@@ -11,7 +11,7 @@ interface TimeSelectorProps {
 
 const timeOptions: string[] = [];
 for (let i = 5; i < 24; i++) {
-  for (let j = 0; j < 60; j++) {
+  for (let j = 0; j < 60; j += 30) {
     timeOptions.push(
       `${i.toString().padStart(2, "0")}:${j.toString().padStart(2, "0")}`,
     );
