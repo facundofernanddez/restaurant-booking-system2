@@ -1,6 +1,10 @@
 import { api } from "@/utils/api";
+import { Dialog, Transition } from "@headlessui/react";
 import { useRouter } from "next/navigation";
-import { type Dispatch, type SetStateAction } from "react";
+import { Fragment, type Dispatch, type SetStateAction } from "react";
+import { HiX } from "react-icons/hi";
+import Spinner from "./Spinner";
+import Image from "next/image";
 
 interface CartProps {
   open: boolean;
@@ -95,9 +99,11 @@ export default function Cart({
                               return (
                                 <li key={item.id} className="flex py-6">
                                   <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                    <img
+                                    <Image
                                       src={item.url}
                                       alt={item.name}
+                                      width={300}
+                                      height={300}
                                       className="h-full w-full object-cover object-center"
                                     />
                                   </div>
