@@ -1,6 +1,7 @@
 import _stripe from "stripe";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 
 const stripe = new _stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2023-10-16",
@@ -34,6 +35,13 @@ export const checkoutRouter = createTRPCRouter({
             input.products.find((product) => product.id === p.id)?.quantity ??
             0,
         }));
+
+        if (productsInCart.length !== input.products.length) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "Some products are not available",
+          });
+        }
       } catch (error) {}
     }),
 });
