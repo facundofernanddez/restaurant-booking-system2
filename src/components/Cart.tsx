@@ -5,6 +5,7 @@ import { Fragment, type Dispatch, type SetStateAction } from "react";
 import { HiX } from "react-icons/hi";
 import Spinner from "./Spinner";
 import Image from "next/image";
+import { capitalize } from "@/utils/helpers";
 
 interface CartProps {
   open: boolean;
