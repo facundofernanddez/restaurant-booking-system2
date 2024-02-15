@@ -42,6 +42,49 @@ export const checkoutRouter = createTRPCRouter({
             message: "Some products are not available",
           });
         }
-      } catch (error) {}
+
+        const session = await stripe.checkout.sessions.create({
+          payment_method_types: ["card"],
+          mode: "payment",
+          line_items: productsInCart.map((product) => ({
+            price_data: {
+              currency: "USD",
+              product_data: {
+                name: product.name,
+              },
+              unit_amount: product.price * 100,
+            },
+            quantity: product.quantity,
+          })),
+          shipping_options: [
+            {
+              shipping_rate_data: {
+                type: "fixed_amount",
+                fixed_amount: {
+                  amount: 0,
+                  currency: "USD",
+                },
+                display_name: "Pickup in store",
+              },
+            },
+          ],
+          success_url: "https://localhost:3000/success",
+          cancel_url: "https://localhost:3000/menu",
+        });
+
+        return {
+          url: session.url ?? "",
+        };
+      } catch (error) {
+        let msg = "";
+
+        if (error instanceof Error) {
+          msg = error.message;
+        }
+        throw new TRPCError({
+          message: msg || "Payment failed",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
     }),
 });
