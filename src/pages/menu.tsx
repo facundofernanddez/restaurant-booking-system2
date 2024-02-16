@@ -28,12 +28,12 @@ export default function MenuPage() {
   return (
     <>
       {isFetchedAfterMount && selectedTime ? (
-        <>
+        <div className="mx-auto mt-12 max-w-7xl sm:px-6 lg:px-8">
           <button onClick={() => router.push("/")}>
             Back to time selection
           </button>
           <Menu selectedTime={selectedTime} />
-        </>
+        </div>
       ) : (
         <>
           <div className="flex h-screen items-center justify-center">
