@@ -1,5 +1,6 @@
 import { api } from "@/utils/api";
 import { capitalize, selectOptions } from "@/utils/helpers";
+import { Button } from "@chakra-ui/react";
 import { format, parseISO } from "date-fns";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -9,9 +10,10 @@ import Select from "react-select";
 
 interface MenuProps {
   selectedTime: string;
+  addToCart: (id: string, quantity: number) => void;
 }
 
-export default function Menu({ selectedTime }: MenuProps) {
+export default function Menu({ selectedTime, addToCart }: MenuProps) {
   const [filter, setFilter] = useState<undefined | string>("");
   const router = useRouter();
   const { data: menuItems } = api.menu.getMenuItems.useQuery();
@@ -72,14 +74,14 @@ export default function Menu({ selectedTime }: MenuProps) {
                 </p>
               </div>
 
-              {/* <Button
+              <Button
                 className="mt-4"
                 onClick={() => {
                   addToCart(menuItem.id, 1);
                 }}
               >
                 Add to cart
-              </Button> */}
+              </Button>
             </div>
           ))}
         </div>
