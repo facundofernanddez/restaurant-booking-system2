@@ -13,9 +13,11 @@ export default function MenuPage() {
 
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const { isFetchedAfterMount } = api.menu.checkMenuStatus.useQuery(undefined, {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onError: () => {},
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { mutate } = api.checkout.checkoutSession.useMutation({
     onSuccess: ({ url }) => {
       router.push(url);

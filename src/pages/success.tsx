@@ -10,6 +10,7 @@ export default function SuccessPage() {
     { id: string; quantity: number }[] | null | false
   >(null);
 
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const { data: itemsInCart } = api.menu.getCartItems.useQuery(products || []);
 
   const total = (
@@ -24,6 +25,7 @@ export default function SuccessPage() {
     const products = localStorage.getItem("products");
 
     if (!products) setProducts(false);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     else setProducts(JSON.parse(products));
   }, []);
 
