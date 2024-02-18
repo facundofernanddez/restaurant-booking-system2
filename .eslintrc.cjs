@@ -16,6 +16,10 @@ const config = {
     "@typescript-eslint/array-type": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
 
+    //add from myself
+    "react/no-unescaped-entities": "off",
+    "@next/next/no-page-custom-font": "off",
+
     "@typescript-eslint/consistent-type-imports": [
       "warn",
       {
